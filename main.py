@@ -169,24 +169,22 @@ class Player(pygame.sprite.Sprite):
         self.change_y+=y
           
     # Find a new position for the player
-    def update(self,walls,gate,direction,filename,name):
+    def update(self,walls,gate,direction,filename,name,direct):
         # Get the old position, in case we need to go back to it
       #imag=pygame.image.load(filename)
-      self.image=pygame.transform.rotate(self.image, 0).convert()
-      if name == "pacman":
-        if direction=="right":
-          self.image=pygame.transform.rotate(self.image, 0).convert()
-        elif direction == "left":
-          self.image=pygame.transform.rotate(self.image, 180).convert()
-      #    self.image=pygame.transform.rotate(imag,180)
-        elif direction =="up":
-          self.image=pygame.transform.rotate(self.image, 90).convert()
-      #    self.image=pygame.transform.rotate(imag,90)
-        elif direction == "down":
-          self.image=pygame.transform.rotate(self.image, 270).convert()
-      #    self.image=pygame.transform.rotate(imag,270)
-      #  self.image=imag.convert()
-        self.rect=self.image.get_rect()
+        if name == "pacman":
+          if direct!=direction:
+            self.image=pygame.image.load(filename).convert()
+            if direction=="right":
+              self.image=pygame.transform.rotate(self.image, 0).convert()
+            elif direction == "left":
+              self.image=pygame.transform.rotate(self.image, 180).convert()
+            elif direction =="up":
+              self.image=pygame.transform.rotate(self.image, 90).convert()
+            elif direction == "down":
+              self.image=pygame.transform.rotate(self.image, 270).convert()
+          self.rect=self.image.get_rect()
+          
         old_x=self.rect.left
         new_x=old_x+self.change_x
         self.rect.left = new_x
@@ -481,6 +479,7 @@ def startGame():
 
   while done == False:
       # ALL EVENT PROCESSING SHOULD GO BELOW THIS COMMENT
+      direct=direction
       for event in pygame.event.get():
           if event.type == pygame.QUIT:
               done=True
@@ -502,45 +501,41 @@ def startGame():
           if event.type == pygame.KEYUP:
               if event.key == pygame.K_LEFT:
                   Pacman.changespeed(30,0)
-                  direction="right"
               if event.key == pygame.K_RIGHT:
                   Pacman.changespeed(-30,0)
-                  direction="right"
               if event.key == pygame.K_UP:
                   Pacman.changespeed(0,30)
-                  direction="right"
               if event.key == pygame.K_DOWN:
                   Pacman.changespeed(0,-30)
-                  direction="right"
       # ALL EVENT PROCESSING SHOULD GO ABOVE THIS COMMENT
    
       # ALL GAME LOGIC SHOULD GO BELOW THIS COMMENT
-      Pacman.update(wall_list,gate,direction,"images/pacman.png","pacman")
+      Pacman.update(wall_list,gate,direction,"images/pacman.png","pacman",direct)
 
       returned = Pinky.changespeed(Pinky_directions,False,pinky_turn,pinky_steps,pinky_length)
       pinky_turn = returned[0]
       pinky_steps = returned[1]
       Pinky.changespeed(Pinky_directions,False,pinky_turn,pinky_steps,pinky_length)
-      Pinky.update(wall_list,False,direction,"images/snakehead.png","pinky")
+      Pinky.update(wall_list,False,direction,"images/snakehead.png","pinky",direct)
 
       returned = Blinky.changespeed(Blinky_directions,False,blinky_turn,blinky_steps,blinky_length)
       blinky_turn = returned[0]
       blinky_steps = returned[1]
       print(returned[0], returned[1])
       Blinky.changespeed(Blinky_directions,False,blinky_turn,blinky_steps,blinky_length)
-      Blinky.update(wall_list,False,direction,"images/snakehead.png","blinky")
+      Blinky.update(wall_list,False,direction,"images/snakehead.png","blinky",direct)
 
       returned = Inky.changespeed(Inky_directions,False,inky_turn,inky_steps,inky_length)
       inky_turn = returned[0]
       inky_steps = returned[1]
       Inky.changespeed(Inky_directions,False,inky_turn,inky_steps,inky_length)
-      Inky.update(wall_list,False,direction,"images/snakehead.png","inky")
+      Inky.update(wall_list,False,direction,"images/snakehead.png","inky",direct)
 
       returned = Clyde.changespeed(Clyde_directions,"clyde",clyde_turn,clyde_steps,clyde_length)
       clyde_turn = returned[0]
       clyde_steps = returned[1]
       Clyde.changespeed(Clyde_directions,"clyde",clyde_turn,clyde_steps,clyde_length)
-      Clyde.update(wall_list,False,direction,"images/snakehead.png","clyde")
+      Clyde.update(wall_list,False,direction,"images/snakehead.png","clyde",direct)
 
       # See if the Pacman block has collided with anything.
       blocks_hit_list = pygame.sprite.spritecollide(Pacman, block_list, True)
@@ -572,7 +567,7 @@ def startGame():
       
       #UPDATE THE GAME
       pygame.display.flip()
-      clock.tick(10)
+      clock.tick(15)
 
 def doNext(message,left,all_sprites_list,block_list,ghost_list,pacman_collide,wall_list,gate):
   while True:
@@ -612,7 +607,7 @@ def doNext(message,left,all_sprites_list,block_list,ghost_list,pacman_collide,wa
 
       #UPDATE THE GAME
       pygame.display.flip()
-      clock.tick(10)
+      clock.tick(15)
 startGame()
 
 pygame.quit()
